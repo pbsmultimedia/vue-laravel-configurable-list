@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    # images must be tagged to be pushed correctly
+    # docker tag laravel-backend europe-southwest1-docker.pkg.dev/parabolic-base-374519/landbell/laravel-backend:v1.0
+    # docker push europe-southwest1-docker.pkg.dev/parabolic-base-374519/landbell/laravel-backend:v1.0
+    image: laravel-backend
+    container_name: laravel-backend
+    ports:
+      - "81:80"
+    volumes:
+      - ./backend/app:/var/www/html
+
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile.dev
+      image: vue-frontend
+      container_name: vue-frontend
+      ports:
+        - "80:8080"
+      volumes:
+        - ./frontend/app:/app

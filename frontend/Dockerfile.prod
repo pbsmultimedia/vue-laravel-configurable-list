@@ -1,0 +1,31 @@
+# Stage 1: Build the Vue app
+FROM node:18 AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the app
+COPY ./app /app
+
+# Install dependencies
+# this can be skipped after installing locally for the first time..
+RUN npm install
+
+# Build the Vue app for production
+RUN npm run build
+
+# Stage 2: Serve the app with Nginx
+FROM nginx:alpine
+
+# Remove default Nginx configuration and replace it with our custom config
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the built Vue app from the builder stage to Nginx's web directory
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose port 80 (default port for Nginx)
+EXPOSE 80
+
+# Start Nginx when the container starts
+CMD ["nginx", "-g", "daemon off;"]
